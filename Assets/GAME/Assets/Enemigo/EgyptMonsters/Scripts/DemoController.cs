@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using TMPro;
 
 public class DemoController : MonoBehaviour
 {
@@ -33,7 +34,7 @@ public class DemoController : MonoBehaviour
 
     public CustomTrigger[] customAnimTriggerList;
 
-    public UnityEngine.UI.Text nameText;
+    public TMP_Text nameText;
 
 
 	void Start()
