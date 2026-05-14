@@ -15394,6 +15394,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b9a305e18de0c04dbd257a21cd47087, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sharedProfile: {fileID: 0}
+  isGlobal: 0
+  blendDistance: 0
+  weight: 1
+  priority: 0
 --- !u!4 &1305607016
 Transform:
   m_ObjectHideFlags: 0
@@ -20528,8 +20533,8 @@ Animator:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1819357937}
   m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: cc70350bcdcdbcd4687f888013bce417, type: 3}
-  m_Controller: {fileID: 9100000, guid: e17d7f68d6344554193eaddbd513d5ee, type: 2}
+  m_Avatar: {fileID: 9000000, guid: 9407fec50666b7546900a3898e0c472b, type: 3}
+  m_Controller: {fileID: 9100000, guid: d9f33e1258c590344a39e00906afd4ae, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 1
