@@ -92,4 +92,10 @@ public class AranaIA : MonoBehaviour
             timerAtaque -= Time.deltaTime;
         }
     }
+
+    public void DealDamage()
+    {
+        // Tu lógica de daño aquí
+        Debug.Log("DealDamage ejecutado");
+    }
 }

@@ -43,7 +43,12 @@ public class GameManager : MonoBehaviour
 
         if (portalDeSalida != null)
         {
-            portalDeSalida.SetActive(true); // El portal aparece mágicamente
+            // En vez de SetActive, llama al método del script
+            PortalSalida portal = portalDeSalida.GetComponent<PortalSalida>();
+            if (portal != null)
+                portal.ActivarPortal();
+            else
+                Debug.LogError("El portal no tiene el script PortalSalida.");
         }
     }
 
