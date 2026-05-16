@@ -99,7 +99,22 @@ public class SaludPersonaje : MonoBehaviour
 
     void Morir()
     {
-        Debug.Log("Muerte definitiva. Reiniciando nivel.");
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        Debug.Log("Muerte definitiva. Reseteando estado del juego.");
+
+        // Restaura las vidas
+        vidasActuales = vidasMaximas;
+        ActualizarUI();
+
+        // Vacía el inventario
+        InventarioJugador inventario = FindFirstObjectByType<InventarioJugador>();
+        if (inventario != null)
+            inventario.VaciarInventario();
+
+        // Resetea objetos del mundo y contadores
+        if (GameManager.instance != null)
+            GameManager.instance.ResetearEstadoCompleto();
+
+        // Respawnea al jugador en su posición inicial
+        EjecutarRespawn();
     }
 }

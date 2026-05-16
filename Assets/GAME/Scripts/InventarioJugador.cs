@@ -48,4 +48,21 @@ public class InventarioJugador : MonoBehaviour
             Debug.Log("Inventario lleno, no se pueden mostrar mas iconos.");
         }
     }
+
+    public void VaciarInventario()
+    {
+        objetosRecolectados = 0;
+        nombresObjetos.Clear();
+
+        foreach (Image img in slotsIconos)
+        {
+            if (img != null)
+            {
+                img.sprite = null;
+                img.enabled = false;
+            }
+        }
+
+        Debug.Log("Inventario vaciado.");
+    }
 }
