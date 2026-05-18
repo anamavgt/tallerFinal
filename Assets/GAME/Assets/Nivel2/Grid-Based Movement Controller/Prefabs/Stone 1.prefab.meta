@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 0a17b0fa4e2b15849b23d09a62445d24
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 257017
+  packageName: grid-based movement controller
+  packageVersion: 1.0.2
+  assetPath: Assets/Evengy/Grid-Based Movement Controller/Prefabs/Stone 1.prefab
+  uploadId: 631654

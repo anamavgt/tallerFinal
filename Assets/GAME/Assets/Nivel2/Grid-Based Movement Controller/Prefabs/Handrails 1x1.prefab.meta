@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 9a73e2448274b7b4a973add1e9f07f85
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 257017
+  packageName: grid-based movement controller
+  packageVersion: 1.0.2
+  assetPath: Assets/Evengy/Grid-Based Movement Controller/Prefabs/Handrails 1x1.prefab
+  uploadId: 631654

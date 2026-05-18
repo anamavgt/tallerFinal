@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: e4bb545cacb313844a74ef07b2822ca6
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 257017
+  packageName: grid-based movement controller
+  packageVersion: 1.0.2
+  assetPath: Assets/Evengy/Grid-Based Movement Controller/Prefabs/Tile.prefab
+  uploadId: 631654

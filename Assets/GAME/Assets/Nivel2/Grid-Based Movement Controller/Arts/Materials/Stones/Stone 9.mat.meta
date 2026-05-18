@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 8b2ec4e94c3d4cb48b5b111456546c26
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 257017
+  packageName: grid-based movement controller
+  packageVersion: 1.0.2
+  assetPath: Assets/Evengy/Grid-Based Movement Controller/Arts/Materials/Stones/Stone
+    9.mat
+  uploadId: 631654
