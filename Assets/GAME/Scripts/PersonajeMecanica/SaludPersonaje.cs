@@ -1,6 +1,7 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.Collections; // Requerido para la corrutina del flash rojo
 
 public class SaludPersonaje : MonoBehaviour
 {
@@ -18,6 +19,17 @@ public class SaludPersonaje : MonoBehaviour
     private float timerInvulnerabilidad;
     private bool esInvulnerable;
 
+    // --- REQUISITOS DEL TALLER (FEEDBACK VISUAL Y AUDIBLE) ---
+    [Header("Feedback de Danio")]
+    public AudioSource audioSource;
+    public AudioClip sonidoDanio;
+    public Image pantallaRojaUI;
+    public float duracionFlashRojo = 0.25f; // Corregido con 'f' para float
+
+    // --- CONEXIÃ“N CON EL MENÃš DE GAME OVER ---
+    [Header("Control de Menus de UI")]
+    public GameOverMenu menuGameOverComponente;
+
     private Vector3 posicionInicial;
 
     void Awake()
@@ -31,6 +43,11 @@ public class SaludPersonaje : MonoBehaviour
         {
             posicionInicial = objetoPlayer.transform.position;
             controller = objetoPlayer.GetComponent<CharacterController>();
+        }
+
+        if (pantallaRojaUI != null)
+        {
+            pantallaRojaUI.gameObject.SetActive(false);
         }
 
         ActualizarUI();
@@ -51,10 +68,20 @@ public class SaludPersonaje : MonoBehaviour
         if (esInvulnerable) return;
 
         vidasActuales -= cantidad;
-        Debug.Log("¡Dañado! Vida restante: " + vidasActuales);
-
         vidasActuales = Mathf.Clamp(vidasActuales, 0, vidasMaximas);
         ActualizarUI();
+
+        Debug.Log("Â¡Danio recibido! Vida restante: " + vidasActuales);
+
+        if (audioSource != null && sonidoDanio != null)
+        {
+            audioSource.PlayOneShot(sonidoDanio);
+        }
+
+        if (pantallaRojaUI != null)
+        {
+            StartCoroutine(EfectoPantallaRoja());
+        }
 
         if (vidasActuales <= 0)
         {
@@ -66,6 +93,16 @@ public class SaludPersonaje : MonoBehaviour
             timerInvulnerabilidad = tiempoInvulnerabilidad;
             EjecutarRespawn();
         }
+    }
+
+    private IEnumerator EfectoPantallaRoja()
+    {
+        pantallaRojaUI.gameObject.SetActive(true);
+        pantallaRojaUI.color = new Color(1f, 0f, 0f, 0.35f);
+
+        yield return new WaitForSeconds(duracionFlashRojo);
+
+        pantallaRojaUI.gameObject.SetActive(false);
     }
 
     void EjecutarRespawn()
@@ -99,22 +136,28 @@ public class SaludPersonaje : MonoBehaviour
 
     void Morir()
     {
-        Debug.Log("Muerte definitiva. Reseteando estado del juego.");
+        Debug.Log("Muerte definitiva. Deteniendo juego y abriendo menu de Game Over.");
 
-        // Restaura las vidas
-        vidasActuales = vidasMaximas;
-        ActualizarUI();
+        if (menuGameOverComponente != null)
+        {
+            vidasActuales = vidasMaximas;
+            ActualizarUI();
 
-        // Vacía el inventario
-        InventarioJugador inventario = FindFirstObjectByType<InventarioJugador>();
-        if (inventario != null)
-            inventario.VaciarInventario();
+            InventarioJugador inventario = FindFirstObjectByType<InventarioJugador>();
+            if (inventario != null)
+                inventario.VaciarInventario();
 
-        // Resetea objetos del mundo y contadores
-        if (GameManager.instance != null)
-            GameManager.instance.ResetearEstadoCompleto();
+            if (GameManager.instance != null)
+                GameManager.instance.ResetearEstadoCompleto();
 
-        // Respawnea al jugador en su posición inicial
-        EjecutarRespawn();
+            EjecutarRespawn();
+
+            menuGameOverComponente.ActivarMenuGameOver();
+        }
+        else
+        {
+            Debug.LogWarning("No se asigno el MenuGameOver en el inspector. Reiniciando escena por defecto.");
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
     }
 }

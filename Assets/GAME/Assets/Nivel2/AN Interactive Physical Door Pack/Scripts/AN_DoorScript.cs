@@ -41,7 +41,7 @@ public class AN_DoorScript : MonoBehaviour
     {
         rbDoor = GetComponent<Rigidbody>();
         hinge = GetComponent<HingeJoint>();
-        HeroInteractive = FindObjectOfType<AN_HeroInteractive>();
+        HeroInteractive = FindFirstObjectByType<AN_HeroInteractive>();
     }
 
     void Update()

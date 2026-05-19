@@ -15,7 +15,7 @@ public class AN_DoorKey : MonoBehaviour
 
     private void Start()
     {
-        hero = FindObjectOfType<AN_HeroInteractive>(); // key will get up and it will saved in "inventary"
+        hero = FindFirstObjectByType<AN_HeroInteractive>(); // key will get up and it will saved in "inventary"
     }
 
     void Update()

@@ -22,6 +22,9 @@ public class ClicPickUpAndCarry : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Metodo requerido por PlayerCarrySystem para alzar el objeto con el mouse
+    /// </summary>
     public void EmpezarACargarDetras(Transform puntoEspalda)
     {
         puntoCargaTarget = puntoEspalda;
@@ -43,10 +46,19 @@ public class ClicPickUpAndCarry : MonoBehaviour
         transform.localRotation = Quaternion.identity;
     }
 
+    /// <summary>
+    /// Metodo requerido por AltarTrigger al colocar exitosamente el objeto
+    /// </summary>
     public void SoltarEnAltar()
     {
         estaSiendoCargado = false;
         transform.SetParent(null);
-        enabled = false;
+
+        if (rb != null)
+        {
+            rb.isKinematic = true; // Se queda quieto en el altar
+        }
+
+        enabled = false; // Desactivamos el script para que no se pueda volver a alzar
     }
 }

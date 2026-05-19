@@ -125,6 +125,7 @@ public class PlayerCarrySystem : MonoBehaviour
         if (corrutinaMensaje != null) StopCoroutine(corrutinaMensaje);
         corrutinaMensaje = StartCoroutine(MostrarMensajeErrorUI());
 
+        // MODIFICADO: Llamada segura para registrar el error sin romper el orden secuencial
         if (ControllerScene2.Instancia != null)
         {
             ControllerScene2.Instancia.RecibirObjetoEnAltar(-1, "Incorrecto");

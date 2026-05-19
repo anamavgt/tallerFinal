@@ -3,7 +3,7 @@ using System.Collections;
 
 public class AltarTrigger : MonoBehaviour
 {
-    [Header("Configuración del Altar (Escena 2)")]
+    [Header("Configuracion del Altar (Escena 2)")]
     public int numeroDeEsteAltar;
     public string nombreDelObjetoClave;
     public Transform puntoAnclajeObjeto;
@@ -16,27 +16,13 @@ public class AltarTrigger : MonoBehaviour
 
     private bool altarYaResuelto = false;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start() {
-    
-    
-    }
-    
-    // Update is called once per frame
-    void Update() { 
-    
-    
-    
-    }
-
-    // SOLUCIÓN AL ERROR: Esta es la función que busca PlayerCarrySystem para el clic
     public bool ValidarObjetoEntregado(string nombreObjeto)
     {
         if (altarYaResuelto) return false;
+        // Valida si el nombre del objeto contiene la clave requerida
         return nombreObjeto.Contains(nombreDelObjetoClave);
     }
 
-    // SOLUCIÓN AL ERROR: Esta función procesa la entrega física al hacer clic correcto
     public void ProcesarEntregaExitosa(ClicPickUpAndCarry objeto)
     {
         altarYaResuelto = true;
@@ -52,13 +38,31 @@ public class AltarTrigger : MonoBehaviour
             objeto.transform.position = puntoAnclajeObjeto.position;
             objeto.transform.rotation = puntoAnclajeObjeto.rotation;
         }
-
         objeto.transform.SetParent(this.transform);
 
-        // Notificar al controlador de la escena
+        // Notificar al controlador de la escena 2 usando el orden correcto
         if (ControllerScene2.Instancia != null)
         {
             ControllerScene2.Instancia.RecibirObjetoEnAltar(numeroDeEsteAltar, nombreDelObjetoClave);
+        }
+    }
+
+    public void ForzarFeedbackRojo()
+    {
+        StartCoroutine(FeedbackErrorVisual());
+    }
+
+    IEnumerator FeedbackErrorVisual()
+    {
+        if (aroBrillanteVisual != null && materialRojo != null)
+        {
+            aroBrillanteVisual.material = materialRojo;
+        }
+        yield return new WaitForSeconds(1.5f);
+
+        if (!altarYaResuelto && aroBrillanteVisual != null && materialNormal != null)
+        {
+            aroBrillanteVisual.material = materialNormal;
         }
     }
 
@@ -85,24 +89,6 @@ public class AltarTrigger : MonoBehaviour
             {
                 scriptJugador.RemoverAltarCercano(this);
             }
-        }
-    }
-
-    public void ForzarFeedbackRojo()
-    {
-        StartCoroutine(FeedbackErrorVisual());
-    }
-
-    IEnumerator FeedbackErrorVisual()
-    {
-        if (aroBrillanteVisual != null && materialRojo != null)
-        {
-            aroBrillanteVisual.material = materialRojo;
-        }
-        yield return new WaitForSeconds(1.2f);
-        if (!altarYaResuelto && aroBrillanteVisual != null)
-        {
-            aroBrillanteVisual.material = materialNormal;
         }
     }
 }

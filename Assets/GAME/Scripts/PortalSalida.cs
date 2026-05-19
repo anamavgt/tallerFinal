@@ -4,20 +4,22 @@ using UnityEngine.SceneManagement;
 public class PortalSalida : MonoBehaviour
 {
     [Header("Configuracion")]
-    public string nombreEscenaSiguiente;
+    public string nombreEscenaSiguiente = "Nivel2";
 
     [Header("Referencias Visuales")]
-    public GameObject[] objetosVisuales; // Arrastra aquí los hijos visuales del portal
-    public Collider portalCollider;       // Arrastra aquí el Collider del portal
+    public GameObject[] objetosVisuales;
+    public Collider portalCollider;
 
     void Start()
     {
         OcultarPortal();
     }
 
+    // SOLUCIÓN DEFINITIVA A LOS ERRORES 2 y 3: La función que invoca el GameManager
     public void ActivarPortal()
     {
         MostrarPortal();
+        Debug.Log("Portal activado desde el GameManager.");
     }
 
     void OcultarPortal()
@@ -44,9 +46,12 @@ public class PortalSalida : MonoBehaviour
             {
                 if (string.IsNullOrEmpty(nombreEscenaSiguiente))
                 {
-                    Debug.LogError("PortalSalida: nombre de escena vacío.");
+                    Debug.LogError("PortalSalida: nombre de escena vacio.");
                     return;
                 }
+
+                // Guardamos antes de saltar
+                GameManager.instance.GuardarProgresoJSON(3);
                 SceneManager.LoadScene(nombreEscenaSiguiente);
             }
         }
