@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: ee3648aee38d22942b6e270c630fa302
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 257017
+  packageName: grid-based movement controller
+  packageVersion: 1.0.2
+  assetPath: Assets/Evengy/Grid-Based Movement Controller/Documentation/Documentation.pdf
+  uploadId: 631654

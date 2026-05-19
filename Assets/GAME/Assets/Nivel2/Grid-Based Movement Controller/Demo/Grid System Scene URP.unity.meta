@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: a2811dccb2b552d4590541e10a33fc16
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 257017
+  packageName: grid-based movement controller
+  packageVersion: 1.0.2
+  assetPath: Assets/Evengy/Grid-Based Movement Controller/Demo/Grid System Scene
+    URP.unity
+  uploadId: 631654

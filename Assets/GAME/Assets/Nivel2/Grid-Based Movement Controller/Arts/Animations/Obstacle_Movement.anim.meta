@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: e3cc16dda21b7894aa82557e76a21054
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 7400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 257017
+  packageName: grid-based movement controller
+  packageVersion: 1.0.2
+  assetPath: Assets/Evengy/Grid-Based Movement Controller/Arts/Animations/Obstacle_Movement.anim
+  uploadId: 631654

@@ -1,48 +1,59 @@
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class BasicCameraFollow : MonoBehaviour
+namespace StylizedCharacterPackDemo
 {
-    public InputActionAsset InputAsset;
-    public Transform Followed; // Aquí arrastrarás a la coneja
-    public float RotateSpeed = 100.0f;
-    public float StartDistance = 10.0f;
-    public float StartVerticalRotation = 45.0f;
-    public float StartHorizontalRotation = 180.0f;
-
-    private InputAction m_LookAction;
-    private Transform m_TargetFollower;
-    private float m_HorizontalRotation;
-    private float m_VerticalRotation;
-
-    void Start()
+    public class BasicCameraFollow : MonoBehaviour
     {
-        var targetObject = new GameObject("CameraLookRoot");
-        m_TargetFollower = targetObject.transform;
-        m_TargetFollower.rotation = Quaternion.Euler(StartVerticalRotation, StartHorizontalRotation, 0);
+        public InputActionAsset InputAsset;
+        public Transform Followed;
+        public float RotateSpeed = 100.0f;
+        public float StartDistance = 10.0f;
+        public float StartVerticalRotation = 45.0f;
+        public float StartHorizontalRotation = 180.0f;
 
-        m_HorizontalRotation = StartHorizontalRotation;
-        m_VerticalRotation = StartVerticalRotation;
+        private InputAction m_LookAction; 
+        private Transform m_TargetFollower;
+        private float m_Distance;
+        private float m_HorizontalRotation;
+        private float m_VerticalRotation;
 
-        transform.SetParent(m_TargetFollower, false);
-        transform.localRotation = Quaternion.identity;
-        transform.localPosition = Vector3.back * StartDistance;
+        void Start()
+        {
+            var targetObject = new GameObject("CameraLookRoot");
+            m_TargetFollower = targetObject.transform;
+            m_TargetFollower.rotation = Quaternion.Euler(StartVerticalRotation, StartHorizontalRotation, 0);
 
-        m_LookAction = InputAsset.FindAction("Look");
-        m_LookAction.Enable();
-    }
+            m_HorizontalRotation = StartHorizontalRotation;
+            m_VerticalRotation = StartVerticalRotation;
 
-    void LateUpdate()
-    {
-        if (Followed == null) return;
+            transform.SetParent(m_TargetFollower, false);
+            transform.localRotation = Quaternion.identity;
+            transform.localPosition = Vector3.back * StartDistance;
 
-        var look = m_LookAction.ReadValue<Vector2>();
-        m_HorizontalRotation += look.x * RotateSpeed * Time.deltaTime;
+            m_LookAction = InputAsset.FindAction("Look");
+            m_LookAction.Enable();
+        }
 
-        while (m_HorizontalRotation < 0.0f) m_HorizontalRotation += 360.0f;
-        while (m_HorizontalRotation > 360.0f) m_HorizontalRotation -= 360.0f;
+        void LateUpdate()
+        {
+            var look = m_LookAction.ReadValue<Vector2>();
+            
+            m_HorizontalRotation += look.x * RotateSpeed * Time.deltaTime;
 
-        m_TargetFollower.transform.position = Followed.position;
-        m_TargetFollower.transform.rotation = Quaternion.Euler(m_VerticalRotation, m_HorizontalRotation, 0.0f);
+            while(m_HorizontalRotation < 0.0f)
+            {
+                m_HorizontalRotation += 360.0f;
+            }
+
+            while(m_HorizontalRotation > 360.0f)
+            {
+                m_HorizontalRotation -= 360.0f;
+            }
+
+            m_TargetFollower.transform.position = Followed.position;
+            m_TargetFollower.transform.rotation = Quaternion.Euler(m_VerticalRotation, m_HorizontalRotation, 0.0f);
+        }
     }
 }
