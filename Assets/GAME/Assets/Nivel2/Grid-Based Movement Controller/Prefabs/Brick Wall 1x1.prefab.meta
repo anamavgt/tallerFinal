@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: e3cb9c7c01be9dc4d96a84e57196ebf5
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 257017
+  packageName: grid-based movement controller
+  packageVersion: 1.0.2
+  assetPath: Assets/Evengy/Grid-Based Movement Controller/Prefabs/Brick Wall 1x1.prefab
+  uploadId: 631654

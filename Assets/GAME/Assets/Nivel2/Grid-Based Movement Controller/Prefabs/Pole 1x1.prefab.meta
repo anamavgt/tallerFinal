@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 49265b0c504500e498955b25e52e097d
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 257017
+  packageName: grid-based movement controller
+  packageVersion: 1.0.2
+  assetPath: Assets/Evengy/Grid-Based Movement Controller/Prefabs/Pole 1x1.prefab
+  uploadId: 631654

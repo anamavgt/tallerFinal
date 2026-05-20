@@ -6,7 +6,17 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/GAME/Scenes/SampleScene.unity
+    path: Assets/GAME/Scenes/Menu.unity
+    guid: 0610cfa27e5c122469d346935ef91c0b
+  - enabled: 1
+    path: Assets/GAME/Scenes/Nivel1.unity
+    guid: 28b08435a624bbf4f8f1fda64c5a1f2f
+  - enabled: 1
+    path: Assets/GAME/Scenes/Nivel2.unity
+    guid: f235c4e681661b1488b102bee107359d
+  - enabled: 0
+    path: Assets/GAME/Assets/Nivel2/Grid-Based Movement Controller/Demo/Sample Scene
+      URP.unity
     guid: 99c9720ab356a0642a771bea13969a05
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}

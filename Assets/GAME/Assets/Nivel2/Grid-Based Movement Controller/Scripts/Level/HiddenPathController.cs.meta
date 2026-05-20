@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 24cd64518f721104582fc80706bb8a0b
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 257017
+  packageName: grid-based movement controller
+  packageVersion: 1.0.2
+  assetPath: Assets/Evengy/Grid-Based Movement Controller/Scripts/Level/HiddenPathController.cs
+  uploadId: 631654
