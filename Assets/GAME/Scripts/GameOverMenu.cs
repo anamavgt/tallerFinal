@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.SceneManagement; // Requerido para reiniciar escenas
+using UnityEngine.SceneManagement;
 
 public class GameOverMenu : MonoBehaviour
 {
@@ -34,16 +34,41 @@ public class GameOverMenu : MonoBehaviour
     }
 
     /// <summary>
-    /// Recarga la escena activa actual restableciendo el flujo del juego.
+    /// Limpia el estado del juego, revive al jugador y oculta el menú restableciendo el flujo.
     /// </summary>
     public void ReintentarEscena()
     {
-        // IMPORTANTE: Siempre restaurar el tiempo antes de cambiar o recargar escenas
-        Time.timeScale = 1f;
+        Debug.Log("Reiniciando estado del jugador y del nivel sin recargar escena...");
 
-        // Obtenemos el nombre de la escena en la que murió el jugador
-        string escenaActual = SceneManager.GetActiveScene().name;
-        SceneManager.LoadScene(escenaActual);
+        // 1. Buscamos el script de salud en la escena para revivir al jugador
+        SaludPersonaje salud = Object.FindFirstObjectByType<SaludPersonaje>();
+        if (salud != null)
+        {
+            // Vaciamos el inventario visual y de datos
+            InventarioJugador inventario = Object.FindFirstObjectByType<InventarioJugador>();
+            if (inventario != null)
+            {
+                inventario.VaciarInventario();
+            }
+
+            // Reseteamos el contador de artefactos del GameManager si está presente
+            if (GameManager.instance != null)
+            {
+                GameManager.instance.ResetearEstadoCompleto();
+            }
+
+            // Le devolvemos las 3 vidas, actualizamos corazones y lo mandamos al inicio
+            salud.RestaurarPersonajeTotalmente();
+        }
+
+        // 2. Ocultamos el panel de derrota
+        if (panelGameOver != null)
+        {
+            panelGameOver.SetActive(false);
+        }
+
+        // 3. Restauramos el flujo del tiempo para que todo vuelva a la normalidad
+        Time.timeScale = 1f;
     }
 
     /// <summary>

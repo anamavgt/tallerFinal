@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using System.Collections; // Requerido para la corrutina del flash rojo
+using System.Collections;
 
 public class SaludPersonaje : MonoBehaviour
 {
@@ -14,19 +14,23 @@ public class SaludPersonaje : MonoBehaviour
     [SerializeField] private int vidasActuales;
     public Image[] corazonesUI;
 
+    // Propiedad para que el GameManager guarde las vidas en el JSON
+    public int VidasParaJSON => vidasActuales;
+
     [Header("Configuracion de Danio")]
     public float tiempoInvulnerabilidad = 1.5f;
     private float timerInvulnerabilidad;
     private bool esInvulnerable;
 
-    // --- REQUISITOS DEL TALLER (FEEDBACK VISUAL Y AUDIBLE) ---
-    [Header("Feedback de Danio")]
+    [Header("Feedback Auditivo del Taller")]
     public AudioSource audioSource;
-    public AudioClip sonidoDanio;
-    public Image pantallaRojaUI;
-    public float duracionFlashRojo = 0.25f; // Corregido con 'f' para float
+    public AudioClip sonidoDanio;       // * Sonido de daño (al perder una vida)
+    public AudioClip sonidoError;       // * Sonido de error (cuando intentan dañarte pero eres invulnerable)
 
-    // --- CONEXIÓN CON EL MENÚ DE GAME OVER ---
+    [Header("Feedback Visual del Taller")]
+    public Image pantallaRojaUI;        // * Aura roja (Flash visual de peligro)
+    public float duracionFlashRojo = 0.25f;
+
     [Header("Control de Menus de UI")]
     public GameOverMenu menuGameOverComponente;
 
@@ -51,7 +55,6 @@ public class SaludPersonaje : MonoBehaviour
         }
 
         ActualizarUI();
-        Debug.Log("Juego Iniciado. Vidas actuales: " + vidasActuales);
     }
 
     void Update()
@@ -65,22 +68,26 @@ public class SaludPersonaje : MonoBehaviour
 
     public void RecibirDanio(int cantidad)
     {
-        if (esInvulnerable) return;
+        // Si el jugador es invulnerable, no pierde vida, pero genera feedback de error
+        if (esInvulnerable)
+        {
+            if (audioSource != null && sonidoError != null)
+            {
+                audioSource.PlayOneShot(sonidoError); // * Sonido de error
+            }
+            return;
+        }
+
+        if (vidasActuales <= 0) return;
 
         vidasActuales -= cantidad;
         vidasActuales = Mathf.Clamp(vidasActuales, 0, vidasMaximas);
         ActualizarUI();
 
-        Debug.Log("¡Danio recibido! Vida restante: " + vidasActuales);
-
+        // * Sonido de daño (al perder una vida)
         if (audioSource != null && sonidoDanio != null)
         {
             audioSource.PlayOneShot(sonidoDanio);
-        }
-
-        if (pantallaRojaUI != null)
-        {
-            StartCoroutine(EfectoPantallaRoja());
         }
 
         if (vidasActuales <= 0)
@@ -89,6 +96,11 @@ public class SaludPersonaje : MonoBehaviour
         }
         else
         {
+            if (pantallaRojaUI != null)
+            {
+                StartCoroutine(EfectoPantallaRoja()); // * Aura roja
+            }
+
             esInvulnerable = true;
             timerInvulnerabilidad = tiempoInvulnerabilidad;
             EjecutarRespawn();
@@ -98,14 +110,12 @@ public class SaludPersonaje : MonoBehaviour
     private IEnumerator EfectoPantallaRoja()
     {
         pantallaRojaUI.gameObject.SetActive(true);
-        pantallaRojaUI.color = new Color(1f, 0f, 0f, 0.35f);
-
+        pantallaRojaUI.color = new Color(1f, 0f, 0f, 0.35f); // Filtro rojo translúcido
         yield return new WaitForSeconds(duracionFlashRojo);
-
         pantallaRojaUI.gameObject.SetActive(false);
     }
 
-    void EjecutarRespawn()
+    public void EjecutarRespawn()
     {
         if (objetoPlayer == null) return;
         if (controller != null) controller.enabled = false;
@@ -125,7 +135,7 @@ public class SaludPersonaje : MonoBehaviour
         if (controller != null) controller.enabled = true;
     }
 
-    void ActualizarUI()
+    public void ActualizarUI()
     {
         for (int i = 0; i < corazonesUI.Length; i++)
         {
@@ -134,29 +144,28 @@ public class SaludPersonaje : MonoBehaviour
         }
     }
 
+    public void RestaurarPersonajeTotalmente()
+    {
+        vidasActuales = vidasMaximas;
+        ActualizarUI();
+        EjecutarRespawn();
+        esInvulnerable = false;
+    }
+
     void Morir()
     {
-        Debug.Log("Muerte definitiva. Deteniendo juego y abriendo menu de Game Over.");
+        if (pantallaRojaUI != null)
+        {
+            StopAllCoroutines();
+            pantallaRojaUI.gameObject.SetActive(false);
+        }
 
         if (menuGameOverComponente != null)
         {
-            vidasActuales = vidasMaximas;
-            ActualizarUI();
-
-            InventarioJugador inventario = FindFirstObjectByType<InventarioJugador>();
-            if (inventario != null)
-                inventario.VaciarInventario();
-
-            if (GameManager.instance != null)
-                GameManager.instance.ResetearEstadoCompleto();
-
-            EjecutarRespawn();
-
             menuGameOverComponente.ActivarMenuGameOver();
         }
         else
         {
-            Debug.LogWarning("No se asigno el MenuGameOver en el inspector. Reiniciando escena por defecto.");
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
     }

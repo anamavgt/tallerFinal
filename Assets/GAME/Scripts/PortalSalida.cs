@@ -1,25 +1,52 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class PortalSalida : MonoBehaviour
 {
-    [Header("Configuracion")]
+    [Header("Configuracion de Destino")]
     public string nombreEscenaSiguiente = "Nivel2";
 
-    [Header("Referencias Visuales")]
+    [Header("Referencias Visuales y Efectos")]
     public GameObject[] objetosVisuales;
+    public ParticleSystem efectosParticulas;
     public Collider portalCollider;
+
+    [Header("Audios de Apertura (Se ejecutan en simultaneo)")]
+    public AudioSource fuenteAudioApertura;
+    public AudioClip sonidoListo;              // * Sonido de "listo"
+    public AudioClip sonidoActivacion;          // * Sonido de activacion (timbre, campana, sonido mágico)
+    public AudioClip sonidoGoznesChirriando;    // * Sonido de goznes chirriando
+    public AudioClip sonidoMecanico;           // * Acompañado de sonido mecánico
+
+    [Header("Audios de Transicion (Al entrar al portal)")]
+    public AudioSource fuenteAudioViaje;
+    public AudioClip sonidoWhoosh;              // * Sonido de teletransportación (whoosh)
+    public AudioClip sonidoEpico;               // * Sonido épico
+
+    private bool yaSeUso = false;
 
     void Start()
     {
+        if (portalCollider == null)
+            portalCollider = GetComponent<Collider>();
+
         OcultarPortal();
     }
 
-    // SOLUCIÓN DEFINITIVA A LOS ERRORES 2 y 3: La función que invoca el GameManager
+    // Lo llama el GameManager automáticamente al llegar a los 10 artefactos
     public void ActivarPortal()
     {
         MostrarPortal();
-        Debug.Log("Portal activado desde el GameManager.");
+
+        // REQUISITO: Reproducir todos los efectos de sonido de la compuerta/portal abriéndose
+        if (fuenteAudioApertura != null)
+        {
+            if (sonidoListo != null) fuenteAudioApertura.PlayOneShot(sonidoListo);
+            if (sonidoActivacion != null) fuenteAudioApertura.PlayOneShot(sonidoActivacion);
+            if (sonidoGoznesChirriando != null) fuenteAudioApertura.PlayOneShot(sonidoGoznesChirriando);
+            if (sonidoMecanico != null) fuenteAudioApertura.PlayOneShot(sonidoMecanico);
+        }
     }
 
     void OcultarPortal()
@@ -27,7 +54,8 @@ public class PortalSalida : MonoBehaviour
         foreach (GameObject visual in objetosVisuales)
             if (visual != null) visual.SetActive(false);
 
-        if (portalCollider != null) portalCollider.enabled = false;
+        if (efectosParticulas != null) efectosParticulas.Stop();
+        if (portalCollider != null) portalCollider.isTrigger = false;
     }
 
     void MostrarPortal()
@@ -35,25 +63,41 @@ public class PortalSalida : MonoBehaviour
         foreach (GameObject visual in objetosVisuales)
             if (visual != null) visual.SetActive(true);
 
-        if (portalCollider != null) portalCollider.enabled = true;
+        if (efectosParticulas != null) efectosParticulas.Play();
+        if (portalCollider != null) portalCollider.isTrigger = true;
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (yaSeUso) return;
+
+        if (other.CompareTag("Player") || other.name.Contains("RabbitCharacter"))
         {
             if (GameManager.instance != null && GameManager.instance.puedeGanar)
             {
-                if (string.IsNullOrEmpty(nombreEscenaSiguiente))
-                {
-                    Debug.LogError("PortalSalida: nombre de escena vacio.");
-                    return;
-                }
-
-                // Guardamos antes de saltar
-                GameManager.instance.GuardarProgresoJSON(3);
-                SceneManager.LoadScene(nombreEscenaSiguiente);
+                yaSeUso = true;
+                StartCoroutine(SecuenciaTeletransporte());
             }
         }
+    }
+
+    IEnumerator SecuenciaTeletransporte()
+    {
+        // REQUISITO: Feedback auditivo de viaje exitoso
+        if (fuenteAudioViaje != null)
+        {
+            if (sonidoWhoosh != null) fuenteAudioViaje.PlayOneShot(sonidoWhoosh);
+            if (sonidoEpico != null) fuenteAudioViaje.PlayOneShot(sonidoEpico);
+        }
+
+        yield return new WaitForSeconds(2f); // Pantalla se oscurece durante 2 segundos
+
+        if (GameManager.instance != null)
+        {
+            GameManager.instance.GuardarProgresoJSON(3);
+        }
+
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(nombreEscenaSiguiente);
     }
 }
