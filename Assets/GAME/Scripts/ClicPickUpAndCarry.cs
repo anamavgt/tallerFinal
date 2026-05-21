@@ -22,9 +22,6 @@ public class ClicPickUpAndCarry : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Metodo requerido por PlayerCarrySystem para alzar el objeto con el mouse
-    /// </summary>
     public void EmpezarACargarDetras(Transform puntoEspalda)
     {
         puntoCargaTarget = puntoEspalda;
@@ -36,29 +33,34 @@ public class ClicPickUpAndCarry : MonoBehaviour
             rb.useGravity = false;
         }
 
-        if (col != null)
-        {
-            col.isTrigger = true;
-        }
+        if (col != null) col.isTrigger = true;
 
         transform.SetParent(puntoCargaTarget);
         transform.localPosition = Vector3.zero;
         transform.localRotation = Quaternion.identity;
     }
 
-    /// <summary>
-    /// Metodo requerido por AltarTrigger al colocar exitosamente el objeto
-    /// </summary>
-    public void SoltarEnAltar()
+    public void RebotarPorError(Vector3 posicionRebote)
     {
         estaSiendoCargado = false;
         transform.SetParent(null);
 
         if (rb != null)
         {
-            rb.isKinematic = true; // Se queda quieto en el altar
+            rb.isKinematic = false;
+            rb.useGravity = true;
+            // Fuerza física de rebote hacia el suelo
+            rb.AddForce((posicionRebote - transform.position).normalized * 5f, ForceMode.Impulse);
         }
 
-        enabled = false; // Desactivamos el script para que no se pueda volver a alzar
+        if (col != null) col.isTrigger = false;
+    }
+
+    public void SoltarEnAltar()
+    {
+        estaSiendoCargado = false;
+        transform.SetParent(null);
+        if (rb != null) rb.isKinematic = true;
+        enabled = false;
     }
 }

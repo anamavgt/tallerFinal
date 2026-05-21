@@ -1,4 +1,3 @@
-using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -9,66 +8,57 @@ namespace StylizedCharacterPackDemo
         public InputActionAsset InputAsset;
         public Transform Followed;
 
-        [Header("Configuración de Distancia y Altura")]
-        public float StartDistance = 2.0f; // <-- FORZADO CORTO
-        public Vector3 OffsetPersonaje = new Vector3(0f, 1.3f, 0f);
+        [Header("Configuración de Vista en Tercera Persona")]
+        public float DistanciaAtras = 2.2f;
 
-        [Header("Velocidad y Rotación")]
+        public Vector3 OffsetPersonaje = new Vector3(0f, 1.45f, 0f);
+
+        [Header("Velocidad y Sensibilidad")]
         public float RotateSpeed = 100.0f;
-        public float SensibilidadMouse = 0.07f;
-
-        public float StartVerticalRotation = 15.0f; // <-- ÁNGULO MÁS BAJO NATURAL
-        public float StartHorizontalRotation = 180.0f;
+        public float SensibilidadMouse = 0.05f;
 
         [Header("Límites de Ángulo Vertical")]
-        public float AnguloMinimo = -5.0f;
-        public float AnguloMaximo = 50.0f;
+        public float AnguloMinimo = -20.0f;
+        public float AnguloMaximo = 45.0f;
 
         private InputAction m_LookAction;
-        private Transform m_TargetFollower;
-        private float m_HorizontalRotation;
-        private float m_VerticalRotation;
+        private float m_RotacionX = 15.0f; 
+        private float m_RotacionY = 180.0f;
 
         void Start()
         {
-            // Forzamos el FOV de la cámara a 50 para garantizar el zoom perfecto
+            transform.SetParent(null);
+            transform.localScale = Vector3.one;
+
             Camera cam = GetComponent<Camera>();
-            if (cam != null) cam.fieldOfView = 50f;
-
-            var targetObject = new GameObject("CameraLookRoot");
-            m_TargetFollower = targetObject.transform;
-
-            // Ignoramos el inspector viejo y forzamos los valores correctos de inicio
-            m_HorizontalRotation = StartHorizontalRotation;
-            m_VerticalRotation = StartVerticalRotation;
-            m_TargetFollower.rotation = Quaternion.Euler(m_VerticalRotation, m_HorizontalRotation, 0);
-
-            transform.SetParent(m_TargetFollower, false);
-            transform.localRotation = Quaternion.identity;
-            transform.localPosition = Vector3.back * StartDistance;
+            if (cam != null) cam.fieldOfView = 60f;
 
             m_LookAction = InputAsset.FindAction("Look");
             m_LookAction.Enable();
+
+            Vector3 rotacionActual = transform.localEulerAngles;
+            m_RotacionX = 15.0f;
+            m_RotacionY = rotacionActual.y;
         }
 
         void LateUpdate()
         {
             if (Followed == null) return;
 
-            var look = m_LookAction.ReadValue<Vector2>();
+            Vector2 lookInput = m_LookAction.ReadValue<Vector2>();
 
-            m_HorizontalRotation += look.x * RotateSpeed * SensibilidadMouse * Time.deltaTime;
-            m_VerticalRotation -= look.y * RotateSpeed * SensibilidadMouse * Time.deltaTime;
+            m_RotacionY += lookInput.x * RotateSpeed * SensibilidadMouse * Time.deltaTime;
+            m_RotacionX -= lookInput.y * RotateSpeed * SensibilidadMouse * Time.deltaTime;
 
-            m_VerticalRotation = Mathf.Clamp(m_VerticalRotation, AnguloMinimo, AnguloMaximo);
+            m_RotacionX = Mathf.Clamp(m_RotacionX, AnguloMinimo, AnguloMaximo);
 
-            while (m_HorizontalRotation < 0.0f) m_HorizontalRotation += 360.0f;
-            while (m_HorizontalRotation > 360.0f) m_HorizontalRotation -= 360.0f;
+            Quaternion rotacionObjetivo = Quaternion.Euler(m_RotacionX, m_RotacionY, 0.0f);
 
-            Vector3 posicionObjetivo = Followed.position + OffsetPersonaje;
-            m_TargetFollower.transform.position = Vector3.Lerp(m_TargetFollower.transform.position, posicionObjetivo, Time.deltaTime * 15f);
+            Vector3 posicionCentro = Followed.position + OffsetPersonaje;
+            Vector3 posicionFinal = posicionCentro - (rotacionObjetivo * Vector3.forward * DistanciaAtras);
 
-            m_TargetFollower.transform.rotation = Quaternion.Euler(m_VerticalRotation, m_HorizontalRotation, 0.0f);
+            transform.rotation = rotacionObjetivo;
+            transform.position = posicionFinal;
         }
     }
 }

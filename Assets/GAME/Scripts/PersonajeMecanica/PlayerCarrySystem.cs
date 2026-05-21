@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using System.Collections;
+using TMPro;
 
 public class PlayerCarrySystem : MonoBehaviour
 {
@@ -9,8 +10,8 @@ public class PlayerCarrySystem : MonoBehaviour
     public float distanciaMaximaAgarrar = 4.0f;
     public Transform puntoCargaEspalda;
 
-    [Header("UI de Error (Requisito Obligatorio)")]
-    public Text textoZonaIncorrecta;
+    [Header("UI de Error")]
+    public TextMeshProUGUI textoZonaIncorrecta;
 
     private ClicPickUpAndCarry objetoCargadoActualmente = null;
     private Camera camaraPrincipal;
@@ -62,7 +63,6 @@ public class PlayerCarrySystem : MonoBehaviour
             if (scriptObjeto != null)
             {
                 float distanciaReal = Vector3.Distance(transform.position, hit.transform.position);
-
                 if (distanciaReal <= distanciaMaximaAgarrar)
                 {
                     objetoCargadoActualmente = scriptObjeto;
@@ -78,54 +78,58 @@ public class PlayerCarrySystem : MonoBehaviour
         {
             if (altarCercanoActual.ValidarObjetoEntregado(objetoCargadoActualmente.gameObject.name))
             {
-                altarCercanoActual.ProcesarEntregaExitosa(objetoCargadoActualmente);
-                objetoCargadoActualmente = null;
-                altarCercanoActual = null;
+                // Obtenemos el paso correcto actual de forma segura desde el controlador
+                int pasoEsperado = ObtenerPasoActual();
+
+                // Validación estricta: El número de altar debe coincidir con el orden de la secuencia activa
+                if (altarCercanoActual.numeroDeEsteAltar == pasoEsperado)
+                {
+                    altarCercanoActual.ProcesarEntregaExitosa(objetoCargadoActualmente);
+                    objetoCargadoActualmente = null;
+                    altarCercanoActual = null;
+                }
+                else
+                {
+                    // Si el objeto corresponde al altar pero NO es su turno en la secuencia
+                    ForzarReboteObjetoInvalido();
+                }
             }
             else
             {
-                MostrarErrorZona();
+                // Si el objeto ni siquiera pertenece a este tipo de altar
+                altarCercanoActual.ForzarFeedbackRojo();
+                ForzarReboteObjetoInvalido();
             }
-        }
-        else if (IntentarSoltarPorClicDirectoAlAltar())
-        {
-            objetoCargadoActualmente = null;
         }
         else
         {
-            MostrarErrorZona();
+            // Si el jugador hace clic en cualquier lugar vacío del mapa mientras carga algo
+            ForzarReboteObjetoInvalido();
         }
     }
 
-    bool IntentarSoltarPorClicDirectoAlAltar()
+    int ObtenerPasoActual()
     {
-        if (camaraPrincipal == null) return false;
-
-        Vector2 posicionMouse = Mouse.current.position.ReadValue();
-        Ray rayo = camaraPrincipal.ScreenPointToRay(posicionMouse);
-        RaycastHit hit;
-
-        if (Physics.Raycast(rayo, out hit, distanciaMaximaAgarrar))
+        // Consulta el script de control central de la Escena 2 para saber qué número de altar toca activar
+        if (ControllerScene2.Instancia != null)
         {
-            AltarTrigger altarClickeado = hit.transform.GetComponent<AltarTrigger>();
-            if (altarClickeado != null)
-            {
-                if (altarClickeado.ValidarObjetoEntregado(objetoCargadoActualmente.gameObject.name))
-                {
-                    altarClickeado.ProcesarEntregaExitosa(objetoCargadoActualmente);
-                    return true;
-                }
-            }
+            return ControllerScene2.Instancia.ObtenerPasoActual();
         }
-        return false;
+        return 0;
     }
 
-    void MostrarErrorZona()
+    void ForzarReboteObjetoInvalido()
     {
+        if (objetoCargadoActualmente != null)
+        {
+            // Ejecuta el rebote físico hacia atrás del personaje (Requisito 5.2)
+            objetoCargadoActualmente.RebotarPorError(transform.position - transform.forward * 2f + Vector3.up * 0.5f);
+            objetoCargadoActualmente = null;
+        }
+
         if (corrutinaMensaje != null) StopCoroutine(corrutinaMensaje);
         corrutinaMensaje = StartCoroutine(MostrarMensajeErrorUI());
 
-        // MODIFICADO: Llamada segura para registrar el error sin romper el orden secuencial
         if (ControllerScene2.Instancia != null)
         {
             ControllerScene2.Instancia.RecibirObjetoEnAltar(-1, "Incorrecto");
